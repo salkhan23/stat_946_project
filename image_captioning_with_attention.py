@@ -20,7 +20,7 @@ import pickle
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 
-from flickr8k import get_flickr8k_data, get_flickr30k_data
+from flickr_datasets import get_flickr8k_data, get_flickr30k_data
 
 from nltk.translate.bleu_score import corpus_bleu, SmoothingFunction
 
