@@ -24,7 +24,7 @@ import tensorflow as tf
 import tensorflow.keras as keras
 
 from external.attention_is_all_you_need.transformer import get_pos_encoding_matrix, Decoder
-from image_captioning_with_attention import CnnEncoder, get_mscoco_data, calc_max_length
+from captioning_gru import CnnEncoder, get_mscoco_data, calc_max_length
 from flickr_datasets import get_flickr8k_data, get_flickr30k_data
 
 from nltk.translate.bleu_score import corpus_bleu, SmoothingFunction
