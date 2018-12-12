@@ -17,7 +17,7 @@ def load_doc(filename):
   return text
 
 # extract descriptions for images
-def load_descriptions(doc):
+def load_descriptions(doc, img_dir):
   mapping = dict()
   all_img_name_vector1 = []
   all_captions1 = []
@@ -45,7 +45,8 @@ def load_descriptions(doc):
     if image_id ==  '2258277193_586949ec62':    
       pass
     else:
-      full_coco_image_path = 'data/flickr8k/Flicker8k_Dataset/' + '%s.jpg' % (image_id)
+      full_coco_image_path = os.path.join(img_dir, '{}.jpg'.format(image_id))
+      # full_coco_image_path = 'data/flickr8k/Flicker8k_Dataset/' + '%s.jpg' % (image_id)
       all_img_name_vector1.append(full_coco_image_path)
       all_captions1.append(caption)
 
@@ -63,11 +64,8 @@ def get_flickr8k_data():
                                           cache_subdir=data_dir,
                                           origin = 'http://nlp.cs.illinois.edu/HockenmaierGroup/Framing_Image_Description/Flickr8k_Dataset.zip',
                                           extract = True)
-      PATH = os.path.dirname(image_zip)+'/Flickr8k_Dataset/'
-    else:
-      PATH = data_dir+'/Flickr8k_Dataset/'
 
-
+    img_dir = data_dir + '/Flicker8k_Dataset/'
 
     name_of_zip = 'Flickr8k_text.zip'
 
@@ -78,11 +76,7 @@ def get_flickr8k_data():
                                           cache_subdir=data_dir,
                                           origin = 'http://nlp.cs.illinois.edu/HockenmaierGroup/Framing_Image_Description/Flickr8k_text.zip',
                                           extract = True)
-      PATH = os.path.dirname(image_zip)+'/Flickr8k_text/'
-    else:
-      PATH = data_dir+'/Flickr8k_text/'
 
-      import string
 
 
     all_captions1 = []
@@ -91,7 +85,7 @@ def get_flickr8k_data():
     # load descriptions
     doc = load_doc(filename)
     # parse descriptions
-    all_captions1,all_img_name_vector1 = load_descriptions(doc)
+    all_captions1,all_img_name_vector1 = load_descriptions(doc, img_dir)
 
     train_caption=[]
     img_name_vector=[]
@@ -103,30 +97,40 @@ def get_flickr8k_data():
 
 
 def get_flickr30k_data():
+    """
+    Note: This Dataset is not automatically downloaded. The Following steps need to be done before this data
+    set can be used:
 
-  print("Entered")
-  #name_of_zip = 'Flickr8k_Dataset.zip'
+    1. Get the dataset (images) from:
+        https://drive.google.com/file/d/0B_PL6p-5reUAZEM4MmRQQ2VVSlk/view?usp=sharin
 
-  data_dir = os.path.join(os.path.abspath('.'), 'data/flickr30k')
+    2. Get the annotations from:
+        http://web.engr.illinois.edu/~bplumme2/Flickr30kEntities/
 
-  PATH = data_dir+'/Flickr30k_Dataset/'
+        - Rename as - Flickr30k.token.txt
+        - Add Flickr30k.token.txt to the folder created in step2.
 
-  data_dir = os.path.join(os.path.abspath('.'), 'data/flickr30k')
-  print("data dir is",data_dir)
-  
-  all_captions1 = []
-  all_img_name_vector1 = []
-  filename = 'data/flickr30k/Flickr30k.token.txt'
+    3.In data folder create a  Flickr30k_Dataset
+      Extract the images from step1 in this directory - !tar xvzf flickr30k_images.tar.gz
 
-  # load descriptions
-  doc = load_doc(filename)
-  # parse descriptions
-  all_captions1,all_img_name_vector1 = load_descriptions(doc)
+    4. Copy all the images in flickr30k_images to the Flickr30k_Dataset directory
 
-  train_caption=[]
-  img_name_vector=[]
-  train_captions = all_captions1
-  img_name_vector = all_img_name_vector1
-  print('Captions loaded:', len(train_captions) )
-  print('Images:', len(img_name_vector) )
-  return train_captions,img_name_vector
+    :return: [captions, images_paths]
+    """
+
+    print("Getting Flicker30k Data ...")
+    # name_of_zip = 'Flickr8k_Dataset.zip'
+
+    data_dir = 'data/flickr30k/Flicker30k_Dataset'
+    print("Data dir is", data_dir)
+
+    captions_file = 'data/flickr30k/Flickr30k.token.txt'
+
+    # load descriptions
+    doc = load_doc(captions_file)
+    # parse descriptions
+    captions, images_paths = load_descriptions(doc, data_dir)
+
+    print('Number of images {}. Number of captions {}'.format(len(images_paths), len(captions)))
+
+    return captions, images_paths
