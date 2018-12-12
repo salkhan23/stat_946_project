@@ -25,7 +25,7 @@ import tensorflow.keras as keras
 
 from external.attention_is_all_you_need.transformer import get_pos_encoding_matrix, Decoder
 from image_captioning_with_attention import CnnEncoder, get_mscoco_data, calc_max_length
-from flickr8k import get_flickr8k_data
+from flickr8k import get_flickr8k_data, get_flickr30k_data
 
 from nltk.translate.bleu_score import corpus_bleu, SmoothingFunction
 
@@ -269,7 +269,8 @@ if __name__ == '__main__':
     # -----------------------------------------------------------------------------------
     print("Getting Data {}".format('.' * 80))
     # data_captions, data_img_names = get_mscoco_data(n_train=30000)
-    data_captions, data_img_names = get_flickr8k_data()
+    # data_captions, data_img_names = get_flickr8k_data()
+    data_captions, data_img_names = get_flickr30k_data()
 
     # -----------------------------------------------------------------------------------
     # Image Feature Encoding Model
