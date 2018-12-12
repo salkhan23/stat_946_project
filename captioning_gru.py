@@ -25,7 +25,7 @@ from flickr_datasets import get_flickr8k_data, get_flickr30k_data
 from nltk.translate.bleu_score import corpus_bleu, SmoothingFunction
 
 
-BASE_RESULTS_DIR = 'results'
+BASE_RESULTS_DIR = 'results/gru'
 
 
 # ***************************************************************************************
@@ -70,8 +70,8 @@ def get_mscoco_data(n_train=30000):
     # Generate lists of images and captions
     # -------------------------------------
     # Read the annotations file
-    with open(annotation_file, 'r') as f:
-        annotations = json.load(f)
+    with open(annotation_file, 'r') as fid:
+        annotations = json.load(fid)
 
     # storing the captions and the image name in vectors
     all_captions = []
@@ -299,7 +299,7 @@ def evaluate(x):
 
 
 def plot_attention(x, result1, attention_plt):
-    temp_image = np.array(Image.open(x))
+    tmp_img = np.array(Image.open(x))
 
     fig = plt.figure(figsize=(10, 10))
 
@@ -308,7 +308,7 @@ def plot_attention(x, result1, attention_plt):
         temp_att = np.resize(attention_plt[lx], (8, 8))
         ax = fig.add_subplot(len_result // 2, len_result // 2, lx + 1)
         ax.set_title(result1[lx])
-        img1 = ax.imshow(temp_image)
+        img1 = ax.imshow(tmp_img)
         ax.imshow(temp_att, cmap='gray', alpha=0.6, extent=img1.get_extent())
 
     plt.tight_layout()
@@ -573,11 +573,7 @@ if __name__ == '__main__':
         # storing the epoch end loss value to plot later
         loss_plot.append(total_loss / count)
         total_loss = total_loss / count
-        print('Epoch {} of {} Loss {:.6f}'.format(
-            epoch + 1,
-            EPOCHS,
-            total_loss ))
-
+        print('Epoch {} of {} Loss {:.6f}'.format(epoch + 1, EPOCHS, total_loss))
 
         print('Getting Validation loss')
         for (batch, (img_tensor, true_caption)) in enumerate(dataset_val):
@@ -603,11 +599,11 @@ if __name__ == '__main__':
                 count_val = count_val + 1
                 total_loss_val += (loss_val / int(true_caption.shape[1]))
 
-                #variables = encoder.variables + decoder.variables
+                # variables = encoder.variables + decoder.variables
 
-                #gradients = tape.gradient(loss, variables)
+                # gradients = tape.gradient(loss, variables)
 
-                #optimizer.apply_gradients(zip(gradients, variables), tf.train.get_or_create_global_step())
+                # optimizer.apply_gradients(zip(gradients, variables), tf.train.get_or_create_global_step())
 
                 if batch % 100 == 0:
                     print('Epoch {} Batch {} validation Loss {:.4f}'.format(
@@ -615,15 +611,13 @@ if __name__ == '__main__':
                         batch,
                         loss_val.numpy() / int(true_caption.shape[1])))
 
-        print('Validation loss for epoch {} is {}'.format(epoch,
-            total_loss_val/count_val))
+        print('Validation loss for epoch {} is {}'.format(epoch, total_loss_val/count_val))
         print('Time taken for epoch {} sec\n'.format(datetime.now() - start))
         
         total_loss_val = total_loss_val / count_val
         loss_plot_val.append(total_loss_val)
-        
 
-    # PLot loss function
+    # Plot loss function
     plt.plot(loss_plot_val)
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
@@ -632,15 +626,13 @@ if __name__ == '__main__':
     plt.savefig(os.path.join(results_dir, 'training.eps'), format='eps')
     
     val_loss_arr = []
-    for val_arr_i in  range(len(loss_plot_val)):
-      l1 = loss_plot_val[0].numpy()
-      val_loss_arr.append(l1)
+    for val_arr_i in range(len(loss_plot_val)):
+        l1 = loss_plot_val[0].numpy()
+        val_loss_arr.append(l1)
 
     val_loss_file = os.path.join(results_dir, 'val_loss.pkl')  
     with open(val_loss_file, 'wb') as handle:
-          pickle.dump(val_loss_arr, handle)
-        
-       
+        pickle.dump(val_loss_arr, handle)
 
     # -----------------------------------------------------------------------------------
     # Evaluate
@@ -672,15 +664,15 @@ if __name__ == '__main__':
     # -------------------------------------------------------
     #                  Sample Captions
     # -------------------------------------------------------
-    for x in range(5):
+    for var_shape_idx in range(5):
         rid = np.random.randint(0, len(img_name_val))
         image = img_name_val[rid]
-        real_caption = ' '.join([index_word[i] for i in cap_val[rid] if i not in [0,1]])
+        real_caption = ' '.join([index_word[i] for i in cap_val[rid] if i not in [0, 1]])
         result, attention_plot = evaluate(image)
 
         print('Real Caption:', real_caption)
         print('Prediction Caption:', ' '.join(result))
-        #plot_attention(image, result, attention_plot)
+        # plot_attention(image, result, attention_plot)
         from PIL import Image
 
         temp_image = np.array(Image.open(image))
@@ -691,7 +683,7 @@ if __name__ == '__main__':
 
         plt.title("True: {}\n Predicted: {} ".format(real_caption, ' '.join(result)), loc='left')
         f = plt.gcf()
-        f.savefig(os.path.join(results_dir, 'sample_caption_{}.eps'.format(x)), format='eps')
+        f.savefig(os.path.join(results_dir, 'sample_caption_{}.eps'.format(var_shape_idx)), format='eps')
     
     # -------------------------------------------------------
     #                  Get BLEU Scores
@@ -735,23 +727,25 @@ if __name__ == '__main__':
     print('encoder variables')
     count_enc = 0
     for i in range(len(encoder.variables)):
-      # print(encoder.variables[i].shape)
-      param_v = 1
-      for x in range(len(encoder.variables[i].shape)):
-        param_v = param_v * encoder.variables[i].shape[x]
-      count_enc = count_enc + param_v
+        # print(encoder.variables[i].shape)
+        param_v = 1
+        for var_shape_idx in range(len(encoder.variables[i].shape)):
+            param_v = param_v * encoder.variables[i].shape[var_shape_idx]
+        count_enc = count_enc + param_v
     print(count_enc)
 
     print('decoder variables')
     count_dec = 0
+
     for i in range(len(decoder.variables)):
-      param_v = 1
-      # print(decoder.variables[i].shape)
-      for x in range(len(decoder.variables[i].shape)):
-        param_v = param_v * decoder.variables[i].shape[x]
-      count_dec = count_dec + param_v
-    print(count_dec)  
-    print('total variables',count_enc + count_dec)
+        param_v = 1
+        # print(decoder.variables[i].shape)
+        for var_shape_idx in range(len(decoder.variables[i].shape)):
+            param_v = param_v * decoder.variables[i].shape[var_shape_idx]
+        count_dec = count_dec + param_v
+
+    print(count_dec)
+    print('total variables', count_enc + count_dec)
     
     summary_file = os.path.join(results_dir, 'summary.text')
     with open(summary_file, 'w') as handle:
