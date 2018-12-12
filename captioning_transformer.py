@@ -431,7 +431,7 @@ if __name__ == '__main__':
 
     dim_model = 512
     dim_hidden = 512
-    num_attention_heads = 2
+    num_attention_heads = 8
     dim_key = 64
     dim_value = 64
     num_decoder_layers = 2
