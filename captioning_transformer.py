@@ -268,9 +268,9 @@ if __name__ == '__main__':
     # Get Data
     # -----------------------------------------------------------------------------------
     print("Getting Data {}".format('.' * 80))
-    # data_captions, data_img_names = get_mscoco_data(n_train=30000)
+    data_captions, data_img_names = get_mscoco_data(n_train=30000)
     # data_captions, data_img_names = get_flickr8k_data()
-    data_captions, data_img_names = get_flickr30k_data()
+    # data_captions, data_img_names = get_flickr30k_data()
 
     # -----------------------------------------------------------------------------------
     # Image Feature Encoding Model
@@ -467,7 +467,7 @@ if __name__ == '__main__':
     # -----------------------------------------------------------------------------------
     print("Training {}".format('.' * 80))
 
-    num_epochs = 10
+    num_epochs = 1
     start_time = datetime.now()
 
 
@@ -604,7 +604,6 @@ if __name__ == '__main__':
         # x_img_features = image_features_extract_model(keras.backend.expand_dims(x_img[0], axis=0))
         # hidden_feature_input = tf.reshape(x_img_features, (x_img_features.shape[0], -1, x_img_features.shape[3]))
         hidden_features = np.load(img_name + '.npy')
-        hidden_features_input = keras.backend.expand_dims(hidden_features, axis=0)
 
         # Tokenize the caption:
         # Expects a list of captions
@@ -616,7 +615,7 @@ if __name__ == '__main__':
         decoded_seq[0, 0] = tokenizer.word_index['<start>']
 
         for i in range(max_caption_len - 1):
-            output = caption_model.prediction_model.predict_on_batch([hidden_feature_input, decoded_seq])
+            output = caption_model.prediction_model.predict_on_batch([hidden_features, decoded_seq])
 
             sampled_index = np.argmax(output[0, i, :])
             sampled_token = tokenizer.index_word[sampled_index]
