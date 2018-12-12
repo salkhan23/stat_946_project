@@ -631,14 +631,31 @@ if __name__ == '__main__':
     
     plt.savefig(os.path.join(results_dir, 'training.eps'), format='eps')
     
+    # Saving the train and validation loss to pickle
     val_loss_arr = []
+    loss_dict = {}
+    
     for val_arr_i in  range(len(loss_plot_val)):
       l1 = loss_plot_val[0].numpy()
       val_loss_arr.append(l1)
-
+      
+    loss_dict["validation_loss"] = val_loss_arr
+    
     val_loss_file = os.path.join(results_dir, 'val_loss.pkl')  
     with open(val_loss_file, 'wb') as handle:
-          pickle.dump(val_loss_arr, handle)
+          pickle.dump(loss_dict, handle)
+        
+    train_loss_arr = []
+    
+    for val_arr_i in  range(len(loss_plot)):
+      l1 = loss_plot_val[0].numpy()
+      train_loss_arr.append(l1)
+      
+    loss_dict["training_loss"] = train_loss_arr
+    
+    val_loss_file = os.path.join(results_dir, 'loss.pkl')  
+    with open(val_loss_file, 'wb') as handle:
+          pickle.dump(loss_dict, handle)   
         
        
 
