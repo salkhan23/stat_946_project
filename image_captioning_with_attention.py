@@ -20,9 +20,14 @@ import pickle
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 
+from flickr8k import get_flickr8k_data, get_flickr30k_data
+
 from nltk.translate.bleu_score import corpus_bleu, SmoothingFunction
 
+
 BASE_RESULTS_DIR = 'results'
+
+
 # ***************************************************************************************
 #  Get the Data
 # ***************************************************************************************
@@ -326,16 +331,15 @@ if __name__ == '__main__':
     if not os.path.exists(results_dir):
         os.mkdir(results_dir)
 
-
     # -----------------------------------------------------------------------------------
     # Get Data
     # -----------------------------------------------------------------------------------
     print("Getting Data ...")
 
-    from flickr8k import get_flickr8k_data, get_flickr30k_data
     # train_captions, img_name_vector = get_mscoco_data()
-    train_captions, img_name_vector = get_flickr8k_data()
-    #train_captions, img_name_vector = get_flickr30k_data()    
+    # train_captions, img_name_vector = get_flickr8k_data()
+    train_captions, img_name_vector = get_flickr30k_data()
+
     # -----------------------------------------------------------------------------------
     # Image Encoder
     # InceptionV3 model (pretrained on Imagenet). Feature Shape [2048, 64]
