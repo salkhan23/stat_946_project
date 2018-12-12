@@ -268,7 +268,7 @@ if __name__ == '__main__':
     # Get Data
     # -----------------------------------------------------------------------------------
     print("Getting Data {}".format('.' * 80))
-    data_captions, data_img_names = get_mscoco_data(n_train=30000)
+    data_captions, data_img_names = get_mscoco_data(n_train=60000)
     # data_captions, data_img_names = get_flickr8k_data()
     # data_captions, data_img_names = get_flickr30k_data()
 
@@ -467,9 +467,8 @@ if __name__ == '__main__':
     # -----------------------------------------------------------------------------------
     print("Training {}".format('.' * 80))
 
-    num_epochs = 1
+    num_epochs = 100
     start_time = datetime.now()
-
 
     def learning_rate_modifier(epoch_idx, curr_learning_rate):
         if epoch_idx == (num_epochs // 2.0):
@@ -499,7 +498,9 @@ if __name__ == '__main__':
         workers=8,
         callbacks=[model_saver, learning_rate_modifying_cb]
     )
-    print("Training took {}".format(datetime.now() - start_time))
+
+    training_time = datetime.now() - start_time
+    print("Training took {}".format(training_time))
 
     f, ax_arr = plt.subplots(1, 2)
     ax_arr[0].plot(history.history['loss'], label='train', color='b')
@@ -664,6 +665,7 @@ if __name__ == '__main__':
         handle.write("Number of Decoder Layers heads {}\n".format(num_decoder_layers))
         handle.write("\n")
         handle.write("Number of Epochs {}\n".format(num_epochs))
+        handle.write("Training Time {}\n".format(training_time))
         handle.write("\n")
         handle.write("BLEU-1 {}\n".format(bleu1))
         handle.write("BLEU-2 {}\n".format(bleu2))
