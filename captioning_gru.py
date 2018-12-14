@@ -336,9 +336,9 @@ if __name__ == '__main__':
     # -----------------------------------------------------------------------------------
     print("Getting Data ...")
 
-    # train_captions, img_name_vector = get_mscoco_data()
+    train_captions, img_name_vector = get_mscoco_data(n_train=60000)
     # train_captions, img_name_vector = get_flickr8k_data()
-    train_captions, img_name_vector = get_flickr30k_data()
+    #train_captions, img_name_vector = get_flickr30k_data()
 
     # -----------------------------------------------------------------------------------
     # Image Encoder
@@ -527,7 +527,7 @@ if __name__ == '__main__':
     
     loss_plot_val = []
 
-    EPOCHS = 20
+    EPOCHS = 50
     
     for epoch in range(EPOCHS):
         start = datetime.now()
