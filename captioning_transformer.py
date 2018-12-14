@@ -264,6 +264,8 @@ if __name__ == '__main__':
     if not os.path.exists(results_dir):
         os.mkdir(results_dir)
 
+    np.random.seed(7)
+
     # -----------------------------------------------------------------------------------
     # Get Data
     # -----------------------------------------------------------------------------------
@@ -295,7 +297,7 @@ if __name__ == '__main__':
 
     par_dir = os.path.dirname(data_img_names[0])
     np_files = glob.glob(par_dir + '/*.npy')
-    if len(np_files) == len(unique_image_names):
+    if len(np_files) >= len(unique_image_names):
         print("Image features already extracted")
 
     else:
@@ -662,7 +664,7 @@ if __name__ == '__main__':
         handle.write("\n")
         handle.write("Number of parameters {}\n".format(caption_model.training_model.count_params()))
         handle.write("Number of attention heads {}\n".format(num_attention_heads))
-        handle.write("Number of Decoder Layers heads {}\n".format(num_decoder_layers))
+        handle.write("Number of Decoder Layers {}\n".format(num_decoder_layers))
         handle.write("\n")
         handle.write("Number of Epochs {}\n".format(num_epochs))
         handle.write("Training Time {}\n".format(training_time))
