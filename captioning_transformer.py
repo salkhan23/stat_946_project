@@ -29,7 +29,7 @@ from flickr_datasets import get_flickr8k_data, get_flickr30k_data
 
 from nltk.translate.bleu_score import corpus_bleu, SmoothingFunction
 
-BASE_RESULTS_DIR = 'models'
+BASE_RESULTS_DIR = 'results'
 
 
 def load_image(img_path, target_size=(299, 299)):
@@ -254,7 +254,7 @@ if __name__ == '__main__':
     # Initialization
     # -----------------------------------------------------------------------------------
     plt.ion()
-    results_identifier = 'captioning_transformer'
+    results_identifier = 'captioning_transformer_nhead_4_nlayers_1'
 
     # Immutable
     if not os.path.exists(BASE_RESULTS_DIR):
@@ -270,7 +270,8 @@ if __name__ == '__main__':
     # Get Data
     # -----------------------------------------------------------------------------------
     print("Getting Data {}".format('.' * 80))
-    data_captions, data_img_names = get_mscoco_data(n_train=60000)
+    num_training = 30000
+    data_captions, data_img_names = get_mscoco_data(n_train=num_training)
     # data_captions, data_img_names = get_flickr8k_data()
     # data_captions, data_img_names = get_flickr30k_data()
 
@@ -433,10 +434,10 @@ if __name__ == '__main__':
 
     dim_model = 512
     dim_hidden = 512
-    num_attention_heads = 8
+    num_attention_heads = 4
     dim_key = 64
     dim_value = 64
-    num_decoder_layers = 2
+    num_decoder_layers = 1
     prob_dropout = 0.2
 
     caption_model = CaptionTransformer(
@@ -469,7 +470,7 @@ if __name__ == '__main__':
     # -----------------------------------------------------------------------------------
     print("Training {}".format('.' * 80))
 
-    num_epochs = 100
+    num_epochs = 30
     start_time = datetime.now()
 
     def learning_rate_modifier(epoch_idx, curr_learning_rate):
@@ -498,7 +499,7 @@ if __name__ == '__main__':
         validation_steps=(num_val // batch_size),
         # max_q_size=1,
         workers=8,
-        callbacks=[model_saver, learning_rate_modifying_cb]
+        callbacks=[model_saver]
     )
 
     training_time = datetime.now() - start_time
@@ -607,6 +608,7 @@ if __name__ == '__main__':
         # x_img_features = image_features_extract_model(keras.backend.expand_dims(x_img[0], axis=0))
         # hidden_feature_input = tf.reshape(x_img_features, (x_img_features.shape[0], -1, x_img_features.shape[3]))
         hidden_features = np.load(img_name + '.npy')
+
 
         # Tokenize the caption:
         # Expects a list of captions
